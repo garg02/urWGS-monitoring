@@ -22,5 +22,10 @@ gcloud compute instances create $1 \
 		echo "2" > /data/upload_status.txt
 		chmod a+w -R /data/
 		chmod +x $PROJECT_DIR/*/*.sh
+		echo "PROJECT_ID=$(gcloud info --format="value(config.project)")" > ~/batch_info.txt
+		echo "INSTANCE_ID=$(curl http://metadata.google.internal/computeMetadata/v1/instance/id -H Metadata-Flavor:Google)" >> ~/batch_info.txt
+		echo "ZONE_ID=$(curl http://metadata.google.internal/computeMetadata/v1/instance/zone -H Metadata-Flavor:Google | rev | cut -d/ -f1 | rev)" >> ~/batch_info.txt
+		echo "cpu_batch_num=$(date +%s)" >> ~/batch_info.txt
+		echo "gpu_batch_num=$(date +%s)" >> ~/batch_info.txt
     $PROJECT_DIR/guppy_mm2/generate_scripts.sh
-		echo -e "SHELL=/bin/bash\nPATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin\nPROJECT_DIR=$PROJECT_DIR\n2-26/3\005432-56/3 * * * * bash -c $PROJECT_DIR/guppy_mm2/run_basecalling_wrapper.sh >> /data/logs/basecall_stdout.log 2>> /data/logs/basecall_stderr.log\n*/3 * * * * bash -c $PROJECT_DIR/guppy_mm2/run_alignment_wrapper.sh >> /data/logs/align_stdout.log 2>> /data/logs/align_stderr.log\n*/5 * * * * bash -c $PROJECT_DIR/guppy_mm2/upload_log.sh" | crontab -'
+		echo -e "SHELL=/bin/bash\nPATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin\nPROJECT_DIR=$PROJECT_DIR\n* * * * * bash -c ./gcp_report_batch/metrics -f ~/batch_info.txt >> batch_metrics_stdout.log 2>> batch_metrics_stderr.log\n2-26/3\005432-56/3 * * * * bash -c $PROJECT_DIR/guppy_mm2/run_basecalling_wrapper.sh >> /data/logs/basecall_stdout.log 2>> /data/logs/basecall_stderr.log\n*/3 * * * * bash -c $PROJECT_DIR/guppy_mm2/run_alignment_wrapper.sh >> /data/logs/align_stdout.log 2>> /data/logs/align_stderr.log\n*/5 * * * * bash -c $PROJECT_DIR/guppy_mm2/upload_log.sh" | crontab -'
