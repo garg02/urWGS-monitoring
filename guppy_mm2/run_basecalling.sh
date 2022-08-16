@@ -7,6 +7,7 @@ ERROR_EMAIL_SUB="Basecalling Error"
 1>&2 echo ""
 1>&2 echo "current "$(TZ='America/Los_Angeles' date)
 CURRTIME=$(date +%s)
+sed -i "s/gpu_batch_num=[[:digit:]]\+/gpu_batch_num=$(CURRTIME)/" ~/batch_info.txt
 BATCH=batch_$CURRTIME
 
 #################### Initialize folder and file names ###########################
