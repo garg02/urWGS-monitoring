@@ -26,6 +26,7 @@ do
 	fi
 	if [ $(ls ${TMP_FASTQ_FOLDER}/$i/*.fastq | wc -l) -eq $(ls ${ORIG_FASTQ_FOLDER}/*.fastq | wc -l) ]; then
 		BATCH=$i
+		sed -i "s/gpu_batch_num=[[:digit:]]\+/gpu_batch_num=$(BATCH)/" ~/batch_info.txt
 		BATCH_FOLDER=${OUTPUT_FOLDER}/$BATCH
 		LOG_FILE=${BATCH_FOLDER}/${BATCH}_alignment.log
 		BAM_FILE=${BATCH_FOLDER}/${BATCH}.bam
